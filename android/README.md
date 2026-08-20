@@ -181,8 +181,9 @@ To enable push:
    with your `applicationId` (default `run.hapi.companion`), download
    `google-services.json` into `android/app/`, and rebuild.
 3. **Hub side**: point the hub at the *same* Firebase project —
-   `FCM_SERVICE_ACCOUNT_PATH` + `FCM_PROJECT_ID`
-   (`docs/api/native-companion-contract.md`). The device registers itself
+   `FCM_SERVICE_ACCOUNT_PATH` (or `fcmServiceAccountPath` in
+   `~/.hapi/settings.json`; the project id comes from the JSON itself, see
+   `docs/api/native-companion-contract.md`). The device registers itself
    with every paired hub (`POST /api/devices/register`) on pairing, app
    start, and token rotation, and unregisters on sign-out.
 
@@ -195,3 +196,28 @@ the session against the active hub.
 Planned for v1.x: runtime `FirebaseOptions` handed out by the hub, so
 self-builds get push without baking a config into the APK. That lands
 entirely behind the existing `app/.../push/PushBinding.kt` seam.
+
+## Release signing
+
+Same philosophy as Firebase: the repo carries no secrets and builds green
+without them. `:app:bundleRelease` produces an **unsigned** AAB unless an
+upload key is configured via gradle properties (user-global
+`~/.gradle/gradle.properties`) or environment variables (CI secrets):
+
+| gradle property | env | meaning |
+|---|---|---|
+| `hapiUploadKeystore` | `HAPI_UPLOAD_KEYSTORE` | keystore path (`~` ok) |
+| `hapiUploadKeystorePassword` | `HAPI_UPLOAD_KEYSTORE_PASSWORD` | store password |
+| `hapiUploadKeyAlias` | `HAPI_UPLOAD_KEY_ALIAS` | default `upload` |
+| `hapiUploadKeyPassword` | `HAPI_UPLOAD_KEY_PASSWORD` | default: store password |
+
+This is an **upload key** for Play App Signing (Google holds the actual
+distribution key, so a lost upload key is resettable in Play Console).
+Generate one with:
+
+```bash
+keytool -genkeypair -v -keystore ~/.hapi/upload.keystore -alias upload \
+  -keyalg RSA -keysize 2048 -validity 10950
+```
+
+Keystores never live in the repo (`*.keystore` / `*.jks` are gitignored).

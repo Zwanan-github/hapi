@@ -19,6 +19,22 @@ if (file("google-services.json").exists()) {
     apply(plugin = "com.google.gms.google-services")
 }
 
+// Release signing: an UPLOAD key only — Play App Signing holds the real
+// distribution key, so a lost upload key is recoverable via Play Console.
+// Resolved from gradle properties (put them in the user-global
+// ~/.gradle/gradle.properties, never the repo) or environment (CI secrets):
+//   hapiUploadKeystore          / HAPI_UPLOAD_KEYSTORE           keystore path (~ ok)
+//   hapiUploadKeystorePassword  / HAPI_UPLOAD_KEYSTORE_PASSWORD
+//   hapiUploadKeyAlias          / HAPI_UPLOAD_KEY_ALIAS          default "upload"
+//   hapiUploadKeyPassword       / HAPI_UPLOAD_KEY_PASSWORD       default: store password
+// All unset → release builds unsigned; the repo needs no secrets to build.
+fun signingSecret(property: String, env: String): String? =
+    (findProperty(property) as String?)?.takeIf { it.isNotBlank() }
+        ?: System.getenv(env)?.takeIf { it.isNotBlank() }
+
+val uploadKeystorePath = signingSecret("hapiUploadKeystore", "HAPI_UPLOAD_KEYSTORE")
+    ?.replaceFirst(Regex("^~"), System.getProperty("user.home"))
+
 android {
     namespace = "app.hapi.companion"
     compileSdk = 36
@@ -31,6 +47,18 @@ android {
         versionName = "0.1.0"
     }
 
+    signingConfigs {
+        if (uploadKeystorePath != null) {
+            create("release") {
+                storeFile = File(uploadKeystorePath)
+                storePassword = signingSecret("hapiUploadKeystorePassword", "HAPI_UPLOAD_KEYSTORE_PASSWORD")
+                keyAlias = signingSecret("hapiUploadKeyAlias", "HAPI_UPLOAD_KEY_ALIAS") ?: "upload"
+                keyPassword = signingSecret("hapiUploadKeyPassword", "HAPI_UPLOAD_KEY_PASSWORD")
+                    ?: signingSecret("hapiUploadKeystorePassword", "HAPI_UPLOAD_KEYSTORE_PASSWORD")
+            }
+        }
+    }
+
     buildTypes {
         release {
             isMinifyEnabled = true
@@ -39,6 +67,8 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            // null when no upload key is configured → unsigned release.
+            signingConfig = signingConfigs.findByName("release")
         }
     }
 
