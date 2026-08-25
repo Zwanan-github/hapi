@@ -111,17 +111,33 @@ class ScratchlistAttachmentFile(
  * `{success: false}` — callers must check the envelope
  * (`docs/api/client-contract/errors.md#rpc-wrapped-endpoints`).
  */
-class HapiApi(
-    hubUrl: String,
+class HapiApi internal constructor(
+    baseUrl: HttpUrl,
     private val client: OkHttpClient,
     private val imageClient: OkHttpClient = client,
     private val authClient: OkHttpClient = client,
 ) : ChatSessionApi {
-    /** Normalized hub origin this instance talks to. */
-    val hubUrl: String = HubUrls.normalize(hubUrl)
-        ?: throw IllegalArgumentException("Invalid hub URL: $hubUrl")
+    /** Public production entry point: cleartext hub origins are rejected. */
+    constructor(
+        hubUrl: String,
+        client: OkHttpClient,
+        imageClient: OkHttpClient = client,
+        authClient: OkHttpClient = client,
+    ) : this(
+        baseUrl = requireHttpsBaseUrl(hubUrl),
+        client = client,
+        imageClient = imageClient,
+        authClient = authClient,
+    )
 
-    private val baseUrl: HttpUrl = this.hubUrl.toHttpUrl()
+    private val baseUrl: HttpUrl = baseUrl.newBuilder()
+        .encodedPath("/")
+        .query(null)
+        .fragment(null)
+        .build()
+
+    /** Normalized hub origin this instance talks to. */
+    val hubUrl: String = baseUrl.toString().removeSuffix("/")
 
     // ---------------------------------------------------------------- core --
 
@@ -777,6 +793,10 @@ class HapiApi(
     }
 
     private companion object {
+        fun requireHttpsBaseUrl(raw: String): HttpUrl = HubUrls.normalize(raw)
+            ?.toHttpUrl()
+            ?: throw IllegalArgumentException("Invalid HTTPS hub URL: $raw")
+
         val JSON_MEDIA_TYPE = "application/json".toMediaType()
 
         /** Reusable `{}` body for POSTs whose zod schema is an empty object. */
