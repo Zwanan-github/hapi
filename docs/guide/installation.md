@@ -109,6 +109,8 @@ sudo mv ./hapi /usr/local/bin/
 <details>
 <summary>Build from source</summary>
 
+Requires Bun 1.4.0.
+
 ```bash
 git clone https://github.com/tiann/hapi.git
 cd hapi
