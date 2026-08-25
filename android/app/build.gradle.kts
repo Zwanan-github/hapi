@@ -1,3 +1,4 @@
+import java.util.Properties
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
@@ -21,16 +22,24 @@ if (file("google-services.json").exists()) {
 
 // Release signing: an UPLOAD key only — Play App Signing holds the real
 // distribution key, so a lost upload key is recoverable via Play Console.
-// Resolved from gradle properties (put them in the user-global
-// ~/.gradle/gradle.properties, never the repo) or environment (CI secrets):
+// Resolved from gradle properties (user-global ~/.gradle/gradle.properties
+// or -P), environment (CI secrets), or android/local.properties (the
+// conventional gitignored home for machine-local secrets — NOT part of
+// gradle's own property chain, hence loaded explicitly):
 //   hapiUploadKeystore          / HAPI_UPLOAD_KEYSTORE           keystore path (~ ok)
 //   hapiUploadKeystorePassword  / HAPI_UPLOAD_KEYSTORE_PASSWORD
 //   hapiUploadKeyAlias          / HAPI_UPLOAD_KEY_ALIAS          default "upload"
 //   hapiUploadKeyPassword       / HAPI_UPLOAD_KEY_PASSWORD       default: store password
 // All unset → release builds unsigned; the repo needs no secrets to build.
+val localProperties = Properties().apply {
+    val file = rootProject.file("local.properties")
+    if (file.exists()) file.inputStream().use { load(it) }
+}
+
 fun signingSecret(property: String, env: String): String? =
     (findProperty(property) as String?)?.takeIf { it.isNotBlank() }
         ?: System.getenv(env)?.takeIf { it.isNotBlank() }
+        ?: localProperties.getProperty(property)?.takeIf { it.isNotBlank() }
 
 val uploadKeystorePath = signingSecret("hapiUploadKeystore", "HAPI_UPLOAD_KEYSTORE")
     ?.replaceFirst(Regex("^~"), System.getProperty("user.home"))

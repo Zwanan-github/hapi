@@ -202,7 +202,10 @@ entirely behind the existing `app/.../push/PushBinding.kt` seam.
 Same philosophy as Firebase: the repo carries no secrets and builds green
 without them. `:app:bundleRelease` produces an **unsigned** AAB unless an
 upload key is configured via gradle properties (user-global
-`~/.gradle/gradle.properties`) or environment variables (CI secrets):
+`~/.gradle/gradle.properties`), environment variables (CI secrets), or
+`android/local.properties` (gitignored; same property names — the
+conventional machine-local home, loaded explicitly since it is not part
+of gradle's own property chain):
 
 | gradle property | env | meaning |
 |---|---|---|
