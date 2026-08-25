@@ -71,6 +71,13 @@
     <string name="new_session_runner_spawn_error">Runner 上次启动错误：%1$s</string>
     <string name="new_session_directory">目录</string>
     <string name="new_session_directory_placeholder">/path/to/project</string>
+    <string name="new_session_browse">浏览目录</string>
+    <string name="directory_browser_choose_directory">选择目录</string>
+    <string name="directory_browser_up">前往上级目录</string>
+    <string name="directory_browser_refresh">刷新</string>
+    <string name="directory_browser_show_hidden">显示隐藏目录</string>
+    <string name="directory_browser_empty">没有子目录</string>
+    <string name="directory_browser_select_current">选择当前目录</string>
     <string name="new_session_recent_paths">最近路径</string>
     <string name="new_session_type">会话类型</string>
     <string name="new_session_type_simple">简单</string>
@@ -80,6 +87,8 @@
     <string name="new_session_worktree_name">工作树名称</string>
     <string name="new_session_worktree_name_placeholder">feature-x（可选）</string>
     <string name="new_session_agent">代理</string>
+    <string name="new_session_agent_availability_loading">正在检查已安装的代理…</string>
+    <string name="new_session_retry">重试</string>
     <string name="new_session_model">模型</string>
     <string name="new_session_effort">思考强度</string>
     <string name="new_session_reasoning_effort">推理强度</string>
@@ -514,4 +523,10 @@
     <string name="new_session_error_codex_models">加载 Codex 模型失败</string>
     <string name="new_session_error_models_detail">加载模型失败：%1$s</string>
     <string name="new_session_error_worktree_name">名称需要至少包含一个字母或数字</string>
+    <string name="new_session_error_directory_outside_workspace_roots">目录必须位于此机器配置的某个工作区根目录内。</string>
+    <string name="directory_browser_error">浏览目录失败</string>
+    <string name="new_session_error_agent_availability">检查已安装代理失败</string>
+    <string name="new_session_error_runner_upgrade_required">创建会话前，请升级并重启此机器上的 HAPI runner。</string>
+    <string name="new_session_error_no_available_agents">此机器上没有安装受支持的代理。</string>
+    <string name="new_session_error_selected_agent_unavailable">所选代理在此机器上不可用。</string>
 </resources>

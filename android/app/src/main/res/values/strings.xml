@@ -64,6 +64,13 @@
     <string name="new_session_runner_spawn_error">Runner last spawn error: %1$s</string>
     <string name="new_session_directory">Directory</string>
     <string name="new_session_directory_placeholder">/path/to/project</string>
+    <string name="new_session_browse">Browse directories</string>
+    <string name="directory_browser_choose_directory">Choose directory</string>
+    <string name="directory_browser_up">Go to parent directory</string>
+    <string name="directory_browser_refresh">Refresh</string>
+    <string name="directory_browser_show_hidden">Show hidden</string>
+    <string name="directory_browser_empty">No subdirectories</string>
+    <string name="directory_browser_select_current">Select current directory</string>
     <string name="new_session_recent_paths">Recent paths</string>
     <string name="new_session_type">Session type</string>
     <string name="new_session_type_simple">Simple</string>
@@ -73,6 +80,8 @@
     <string name="new_session_worktree_name">Worktree name</string>
     <string name="new_session_worktree_name_placeholder">feature-x (optional)</string>
     <string name="new_session_agent">Agent</string>
+    <string name="new_session_agent_availability_loading">Checking installed Agents…</string>
+    <string name="new_session_retry">Retry</string>
     <string name="new_session_model">Model</string>
     <string name="new_session_effort">Effort</string>
     <string name="new_session_reasoning_effort">Reasoning effort</string>
@@ -507,4 +516,10 @@
     <string name="new_session_error_codex_models">Failed to load Codex models</string>
     <string name="new_session_error_models_detail">Failed to load models: %1$s</string>
     <string name="new_session_error_worktree_name">Name needs at least one letter or digit</string>
+    <string name="new_session_error_directory_outside_workspace_roots">Directory must be inside one of this machine’s workspace roots.</string>
+    <string name="directory_browser_error">Failed to browse directories</string>
+    <string name="new_session_error_agent_availability">Failed to check installed Agents</string>
+    <string name="new_session_error_runner_upgrade_required">Upgrade and restart this machine’s HAPI runner before creating sessions.</string>
+    <string name="new_session_error_no_available_agents">No supported Agents are installed on this machine.</string>
+    <string name="new_session_error_selected_agent_unavailable">The selected Agent is not available on this machine.</string>
 </resources>

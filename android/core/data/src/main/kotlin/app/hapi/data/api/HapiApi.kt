@@ -1,6 +1,7 @@
 package app.hapi.data.api
 
 import app.hapi.data.auth.HubUrls
+import app.hapi.protocol.wire.AgentAvailabilityResponse
 import app.hapi.protocol.wire.ApprovePermissionRequest
 import app.hapi.protocol.wire.AuthRequest
 import app.hapi.protocol.wire.AuthResponse
@@ -470,6 +471,10 @@ class HapiApi(
      */
     suspend fun spawnSession(machineId: String, spawn: SpawnSessionRequest): SpawnResponse =
         request("POST", url("api", "machines", machineId, "spawn").build(), spawn.toJsonBody())
+
+    /** Installed/static-configured Agents reported by the selected runner. */
+    suspend fun getMachineAgentAvailability(machineId: String): AgentAvailabilityResponse =
+        request("GET", url("api", "machines", machineId, "agent-availability").build())
 
     /** `POST /api/machines/:id/list-directory` (RPC-wrapped: check `success`). */
     suspend fun listMachineDirectory(
