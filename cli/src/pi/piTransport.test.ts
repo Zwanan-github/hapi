@@ -207,6 +207,16 @@ describe('PiTransport', () => {
             expect(mockKillProcessByChildProcess).toHaveBeenNthCalledWith(2, mockProcess, true);
         });
 
+        it('should not stop a PID after the process has already closed', async () => {
+            const transport = new PiTransport({ command: 'pi', args: ['--mode', 'rpc'], cwd: '/work' });
+            transport.start();
+            mockProcess.emit('close', 0, null);
+
+            await transport.kill();
+
+            expect(mockKillProcessByChildProcess).not.toHaveBeenCalled();
+        });
+
         it('should be a no-op when process is not running', () => {
             const transport = new PiTransport({ command: 'pi', args: ['--mode', 'rpc'], cwd: '/work' });
             expect(() => transport.kill()).not.toThrow();

@@ -110,7 +110,7 @@ export class PiTransport extends JsonLineParser {
     }
 
     async kill(): Promise<void> {
-        if (!this.process || this.killed) return;
+        if (!this.process || this.killed || this.exited) return;
         this.killed = true;
 
         let stopped = false;
