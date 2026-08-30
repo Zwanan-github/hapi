@@ -3,8 +3,8 @@ import type { ChildProcessWithoutNullStreams } from 'node:child_process';
 import { EventEmitter } from 'node:events';
 
 const mockSpawn = vi.fn();
-vi.mock('node:child_process', () => ({
-    get spawn() { return mockSpawn; }
+vi.mock('cross-spawn', () => ({
+    default: mockSpawn
 }));
 
 vi.mock('@/ui/logger', () => ({
