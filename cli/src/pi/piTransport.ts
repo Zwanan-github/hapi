@@ -2,6 +2,7 @@ import type { ChildProcessWithoutNullStreams } from 'node:child_process';
 import spawn from 'cross-spawn';
 import { logger } from '@/ui/logger';
 import { JsonLineParser } from '@/utils/jsonLineParser';
+import { killProcessByChildProcess } from '@/utils/process';
 import { PiAgentEventSchema } from './schemas';
 import type { PiAgentEvent, PiRpcCommand } from './types';
 
@@ -108,10 +109,27 @@ export class PiTransport extends JsonLineParser {
         this.errorHandler = handler;
     }
 
-    kill(): void {
+    async kill(): Promise<void> {
         if (!this.process || this.killed) return;
         this.killed = true;
-        this.process.kill('SIGTERM');
+
+        let stopped = false;
+        try {
+            stopped = await killProcessByChildProcess(this.process, false);
+        } catch {
+            stopped = false;
+        }
+        if (!stopped) {
+            try {
+                stopped = await killProcessByChildProcess(this.process, true);
+            } catch {
+                stopped = false;
+            }
+        }
+
+        if (!stopped) {
+            logger.warn(`[pi] Failed to stop Pi process tree (pid=${this.process.pid ?? 'unknown'})`);
+        }
     }
 
     protected handleLine(line: string): void {
